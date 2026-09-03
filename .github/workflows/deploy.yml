@@ -1,0 +1,36 @@
+name: Set Up PROD CI/CD for sunset view store
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: SFTP Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install lftp
+        run: sudo apt-get install -y lftp
+
+      - name: Deploy via SFTP with lftp
+        env:
+          SFTP_HOST: ${{ secrets.FTP_SERVER }}
+          SFTP_USER: ${{ secrets.FTP_USERNAME }}
+          SFTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          SFTP_PORT: ${{ secrets.FTP_PORT }}
+        run: |
+          lftp -c "
+            set sftp:auto-confirm yes;
+            set net:max-retries 3;
+            open sftp://$SFTP_USER:$SFTP_PASS@$SFTP_HOST:$SFTP_PORT;
+            mirror --reverse --delete --verbose \
+              --exclude=^\.git \
+              --exclude=^node_modules \
+              ./blocksy-child/ /www/sunsetviewstore_336/public/wp-content/themes/blocksy-child/;
+            bye
+          " 
