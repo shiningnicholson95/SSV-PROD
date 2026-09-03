@@ -32,5 +32,9 @@ jobs:
               --exclude=^\.git \
               --exclude=^node_modules \
               ./blocksy-child/ /www/sunsetviewstore_336/public/wp-content/themes/blocksy-child/;
+            mirror --reverse --delete --verbose \
+              --exclude=^\.git \
+              --exclude=^node_modules \
+              ./mu-plugins/ /www/sunsetviewstore_336/public/wp-content/mu-plugins/;
             bye
-          " 
+          "
